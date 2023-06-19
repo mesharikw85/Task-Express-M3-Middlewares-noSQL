@@ -1,17 +1,28 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const {
   postsGet,
   postsUpdate,
   postsDelete,
   postsCreate,
-} = require('./posts.controllers');
+  fetchPost,
+} = require("./posts.controllers");
 
-router.get('/', postsGet);
-router.post('/', postsCreate);
+router.param("postId", async (req, res, next, postId) => {
+  try {
+    const foundPost = fetchPost(postId);
+    if (!foundPost) return next({ status: 404, message: "post not found" });
+    req.post = foundPost;
+  } catch (error) {
+    return next(error);
+  }
+});
 
-router.delete('/:postId', postsDelete);
+router.get("/", postsGet);
+router.post("/", postsCreate);
 
-router.put('/:postId', postsUpdate);
+router.delete("/:postId", postsDelete);
+
+router.put("/:postId", postsUpdate);
 
 module.exports = router;
