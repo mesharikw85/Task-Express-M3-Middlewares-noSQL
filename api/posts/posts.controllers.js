@@ -7,6 +7,18 @@ exports.fetchPost = async (postId) => {
 
 exports.postsCreate = async (req, res, next) => {
   try {
+    if (req.file) {
+      req.body.image = `${req.file.path}`;
+    }
+    const newPost = await Post.create(req.body);
+    return res.status(201).json(newPost);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.postsCreate = async (req, res, next) => {
+  try {
     const newPost = await Post.create(req.body);
 
     res.status(201).json(newPost);
